@@ -11,17 +11,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.client.Delete;
-import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HConnection;
-import org.apache.hadoop.hbase.client.HConnectionManager;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.HTableInterface;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Result;
-import org.apache.hadoop.hbase.client.ResultScanner;
-import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 @SuppressWarnings("deprecation")
@@ -32,7 +23,9 @@ public class HbaseOp {
 
     private HBaseAdmin admin;
 
-    private HConnection connection;
+//    private HConnection connection; //habse1.x版本中已过期
+    private Connection connection;
+
 
 
     public HbaseOp(Configuration conf) throws IOException {
@@ -51,16 +44,19 @@ public class HbaseOp {
 
         this.admin = new HBaseAdmin(this.conf);
 
-        this.connection = HConnectionManager.createConnection(conf);
+//        this.connection = HConnectionManager.createConnection(conf); //habse1.x版本中已过期
+        // 通过ConnectionFactory 创建connection
+        this.connection = ConnectionFactory.createConnection(conf);
+
 
     }
 
     // 获取表名
-
-    public HTableInterface getTable(String tableName) {
+    public Table getTable(String tableName) {
 
         try {
-            return connection.getTable(tableName);
+//            return connection.getTable(tableName);
+            return this.connection.getTable(TableName.valueOf(tableName));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -91,7 +87,6 @@ public class HbaseOp {
 
 
             }
-
             admin.createTable(dsc);
             System.out.println("创建表成功");
 
@@ -122,7 +117,7 @@ public class HbaseOp {
     public void insertRecord(String tableName, String rowkey, String family,
                              String qualifier, String value) throws IOException {
 
-        HTableInterface table = this.getTable(tableName);
+       Table  table = this.getTable(tableName);
 
         Put put = new Put(rowkey.getBytes());
 
@@ -139,9 +134,8 @@ public class HbaseOp {
     public void insertRecords(String tableName, String rowkey, String familys[],
                               String qualifier, String value, int sizes) throws IOException {
 
-        HTableInterface table = this.getTable(tableName);
+        Table table = this.getTable(tableName);
 
-        table.setAutoFlush(true);
 
         List<Put> puts = new ArrayList<Put>();
         Put put = null;
@@ -163,7 +157,7 @@ public class HbaseOp {
     public void deleteRecord(String tableName, String rowkey)
             throws IOException {
 
-        HTable table = new HTable(this.conf, tableName);
+        Table table = this.getTable(tableName);
 
         Delete del = new Delete(rowkey.getBytes());
 
@@ -173,12 +167,16 @@ public class HbaseOp {
 
     }
 
+    // 清空表记录
+    public void truncateTable(String tableName){
+    }
+
     // 5.获取一行记录
 
     public Result getOneRecord(String tableName, String rowkey)
             throws IOException {
 
-        HTable table = new HTable(this.conf, tableName);
+        Table table = this.getTable(tableName);
 
         Get get = new Get(rowkey.getBytes());
 
@@ -192,7 +190,7 @@ public class HbaseOp {
 
     public List<Result> getAllRecord(String tableName) throws IOException {
 
-        HTable table = new HTable(this.conf, tableName);
+        Table table = this.getTable(tableName);
 
         Scan scan = new Scan();
 
@@ -210,6 +208,17 @@ public class HbaseOp {
 
         return list;
 
+    }
+
+    public void close(){
+        //关闭资源
+        if(this.connection!=null){
+            try {
+                this.connection.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
