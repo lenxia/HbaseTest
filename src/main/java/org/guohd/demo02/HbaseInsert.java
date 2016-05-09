@@ -7,7 +7,6 @@ public class HbaseInsert {
 	 * 单线程插入数据
 	 * 
 	 */
-
 	public static void SingleThreadInsert(String tableName, int count)
 			throws IOException {
 		System.out.println("---------开始SingleThreadInsert测试----------");

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.curator.retry.RetryUntilElapsed;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -16,7 +17,7 @@ import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
 @SuppressWarnings("deprecation")
-public class HbaseOp {
+public class HbaseUtils {
     // .相关配置属性
 
     private Configuration conf;
@@ -28,7 +29,7 @@ public class HbaseOp {
 
 
 
-    public HbaseOp(Configuration conf) throws IOException {
+    public HbaseUtils(Configuration conf) throws IOException {
 
         this.conf = HBaseConfiguration.create(conf);
 
@@ -36,7 +37,7 @@ public class HbaseOp {
 
     }
 
-    public HbaseOp() throws IOException {
+    public HbaseUtils() throws IOException {
 
         Configuration cnf = new Configuration();
 
@@ -171,9 +172,9 @@ public class HbaseOp {
     public void truncateTable(String tableName){
     }
 
-    // 5.获取一行记录
+    // 5.获取一行记录:根据rowkey获取
 
-    public Result getOneRecord(String tableName, String rowkey)
+    public Result getByRowKey(String tableName, String rowkey)
             throws IOException {
 
         Table table = this.getTable(tableName);
@@ -184,6 +185,26 @@ public class HbaseOp {
 
         return rs;
 
+    }
+
+
+    //批量获取
+    public Result[] getBatchs(String tableName,int size,String rowkey[],String cf[],String qualifier[]){
+        Table table = this.getTable(tableName);
+        List<Get> gets = new ArrayList<Get>();
+        Get get =null;
+
+        try {
+            for(int i=0;i<size;i++){
+                new Get(Bytes.toBytes(rowkey[i]));
+                get.addColumn(Bytes.toBytes(cf[i]),Bytes.toBytes(qualifier[i]));
+            }
+            gets.add(get);
+            return table.get(gets);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     // 6.获取所有记录

@@ -15,21 +15,27 @@ import java.io.IOException;
  */
 public class HbaseProps {
     static Configuration hbaseConfig = null;
-    public static Connection connection = null;
-    public static String TABLE_NAME = "t_user";
+    private static Connection connection = null;
+    public final static String TABLE_NAME = "t_user";
 
     static {
         // conf = HBaseConfiguration.create();
         Configuration HBASE_CONFIG = new Configuration();
         /*HBASE_CONFIG.set("hbase.master", "192.168.2.11:60000");
-		HBASE_CONFIG.set("hbase.zookeeper.quorum", "192.168.2.11");
+        HBASE_CONFIG.set("hbase.zookeeper.quorum", "192.168.2.11");
 		HBASE_CONFIG.set("hbase.zookeeper.property.clientPort", "2181");*/
         hbaseConfig = HBaseConfiguration.create(HBASE_CONFIG);
-
-        try {
-            connection = ConnectionFactory.createConnection(hbaseConfig);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
+
+    public static Connection getConnection() {
+        if (connection == null) {
+            try {
+                return ConnectionFactory.createConnection(new Configuration());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 }

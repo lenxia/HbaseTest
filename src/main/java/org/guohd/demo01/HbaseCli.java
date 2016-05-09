@@ -14,7 +14,7 @@ public class HbaseCli {
     public static void main(String[] args) {
 
         try {
-            HbaseOp hbaseOp = new HbaseOp();
+            HbaseUtils hbaseOp = new HbaseUtils();
             String[] familys = {"info1", "info2"};
 //		hbaseOp.createTable("user01", familys);
             System.out.println(new Date());

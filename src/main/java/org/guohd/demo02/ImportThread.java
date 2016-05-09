@@ -10,8 +10,8 @@ public class ImportThread extends Thread {
 	public void run() {
 		try {
 			HbaseUtils.insert(HbaseProps.TABLE_NAME,100000);
+
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
