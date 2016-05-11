@@ -1,6 +1,7 @@
 package org.guohd.demo01;
 /**
- * @author guohd
+ * @author guohd created by
+ * @date
  */
 
 import java.io.IOException;
@@ -86,7 +87,6 @@ public class HbaseUtils {
 
                 dsc.addFamily(family);
 
-
             }
             admin.createTable(dsc);
             System.out.println("创建表成功");
@@ -112,6 +112,7 @@ public class HbaseUtils {
         }
 
     }
+
 
     // 3.插入一行记录
 
