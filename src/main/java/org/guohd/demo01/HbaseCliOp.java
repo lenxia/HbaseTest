@@ -17,8 +17,7 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 
-@SuppressWarnings("deprecation")
-public class HbaseUtils {
+public class HbaseCliOp {
     // .相关配置属性
 
     private Configuration conf;
@@ -26,11 +25,11 @@ public class HbaseUtils {
     private HBaseAdmin admin;
 
 //    private HConnection connection; //habse1.x版本中已过期
-    private Connection connection;
+    private HConnection connection;
 
 
 
-    public HbaseUtils(Configuration conf) throws IOException {
+    public HbaseCliOp(Configuration conf) throws IOException {
 
         this.conf = HBaseConfiguration.create(conf);
 
@@ -38,7 +37,7 @@ public class HbaseUtils {
 
     }
 
-    public HbaseUtils() throws IOException {
+    public HbaseCliOp() throws IOException {
 
         Configuration cnf = new Configuration();
 
@@ -48,13 +47,13 @@ public class HbaseUtils {
 
 //        this.connection = HConnectionManager.createConnection(conf); //habse1.x版本中已过期
         // 通过ConnectionFactory 创建connection
-        this.connection = ConnectionFactory.createConnection(conf);
+        this.connection = HConnectionManager.createConnection(conf);
 
 
     }
 
     // 获取表名
-    public Table getTable(String tableName) {
+    public HTableInterface getTable(String tableName) {
 
         try {
 //            return connection.getTable(tableName);
@@ -119,7 +118,7 @@ public class HbaseUtils {
     public void insertRecord(String tableName, String rowkey, String family,
                              String qualifier, String value) throws IOException {
 
-       Table  table = this.getTable(tableName);
+       HTableInterface  table = this.getTable(tableName);
 
         Put put = new Put(rowkey.getBytes());
 
@@ -136,7 +135,7 @@ public class HbaseUtils {
     public void insertRecords(String tableName, String rowkey, String familys[],
                               String qualifier, String value, int sizes) throws IOException {
 
-        Table table = this.getTable(tableName);
+        HTableInterface table = this.getTable(tableName);
 
 
         List<Put> puts = new ArrayList<Put>();
@@ -159,7 +158,7 @@ public class HbaseUtils {
     public void deleteRecord(String tableName, String rowkey)
             throws IOException {
 
-        Table table = this.getTable(tableName);
+        HTableInterface table = this.getTable(tableName);
 
         Delete del = new Delete(rowkey.getBytes());
 
@@ -178,7 +177,7 @@ public class HbaseUtils {
     public Result getByRowKey(String tableName, String rowkey)
             throws IOException {
 
-        Table table = this.getTable(tableName);
+        HTableInterface table = this.getTable(tableName);
 
         Get get = new Get(rowkey.getBytes());
 
@@ -191,7 +190,7 @@ public class HbaseUtils {
 
     //批量获取
     public Result[] getBatchs(String tableName,int size,String rowkey[],String cf[],String qualifier[]){
-        Table table = this.getTable(tableName);
+        HTableInterface table = this.getTable(tableName);
         List<Get> gets = new ArrayList<Get>();
         Get get =null;
 
@@ -212,7 +211,7 @@ public class HbaseUtils {
 
     public List<Result> getAllRecord(String tableName) throws IOException {
 
-        Table table = this.getTable(tableName);
+        HTableInterface table = this.getTable(tableName);
 
         Scan scan = new Scan();
 

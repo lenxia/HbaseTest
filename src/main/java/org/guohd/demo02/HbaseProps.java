@@ -2,9 +2,10 @@ package org.guohd.demo02;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
 import org.apache.hadoop.hbase.client.HTablePool;
+import org.apache.hadoop.hbase.client.HTableUtil;
 
 import java.io.IOException;
 
@@ -15,8 +16,12 @@ import java.io.IOException;
  */
 public class HbaseProps {
     static Configuration hbaseConfig = null;
-    private static Connection connection = null;
+//    private static Connection connection = null;
     public final static String TABLE_NAME = "t_user";
+    private static HConnection connection = null;
+
+
+
 
     static {
         // conf = HBaseConfiguration.create();
@@ -27,10 +32,10 @@ public class HbaseProps {
         hbaseConfig = HBaseConfiguration.create(HBASE_CONFIG);
     }
 
-    public static Connection getConnection() {
+    public static HConnection getConnection() {
         if (connection == null) {
             try {
-                return ConnectionFactory.createConnection(new Configuration());
+                return HConnectionManager.createConnection(new Configuration());
             } catch (IOException e) {
                 e.printStackTrace();
             }

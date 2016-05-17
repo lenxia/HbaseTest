@@ -21,10 +21,17 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
-        <!-- 添加hbase依赖 -->
+        <!-- 添加hbase client依赖 -->
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
+            <version>0.98.8-hadoop2</version>
+        </dependency>
+
+        <!--habse mr依赖-->
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-server</artifactId>
             <version>0.98.8-hadoop2</version>
         </dependency>
 
@@ -34,12 +41,7 @@
             <artifactId>hadoop-hdfs</artifactId>
             <version>2.6.0</version>
         </dependency>
-        <!-- 解决使用maven构建hbase环境：No FileSystem for scheme: hdfs -->
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs</artifactId>
-            <version>2.6.0</version>
-        </dependency>
+
         <!--添加hadoop依赖 -->
         <dependency>
             <groupId>org.apache.hadoop</groupId>

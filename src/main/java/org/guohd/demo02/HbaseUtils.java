@@ -10,9 +10,9 @@ import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.client.Table;
 
 /**
  * hbase工具类
@@ -20,9 +20,9 @@ import org.apache.hadoop.hbase.client.Table;
 public class HbaseUtils extends HbaseInsert {
 
     public static void insert(String tableName,int sizes) throws IOException {
-        Table table = HbaseProps.getConnection().getTable(TableName.valueOf(tableName));
-//		table.setAutoFlush(false);
-//        table.setWriteBufferSize(24 * 1024 * 1024);
+       HTableInterface table = HbaseProps.getConnection().getTable(TableName.valueOf(tableName));
+		table.setAutoFlush(false);
+        table.setWriteBufferSize(24 * 1024 * 1024);
         // 构造测试数据
         List<Put> list = new ArrayList<Put>();
 //        byte[] buffer = new byte[350];
