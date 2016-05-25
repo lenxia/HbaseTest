@@ -15,6 +15,7 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
+import org.apache.hadoop.hbase.filter.Filter;
 import org.apache.hadoop.hbase.util.Bytes;
 
 public class HbaseCliOp {
@@ -24,10 +25,8 @@ public class HbaseCliOp {
 
     private HBaseAdmin admin;
 
-//    private HConnection connection; //habse1.x版本中已过期
+    //    private HConnection connection; //habse1.x版本中已过期
     private HConnection connection;
-
-
 
     public HbaseCliOp(Configuration conf) throws IOException {
 
@@ -64,8 +63,6 @@ public class HbaseCliOp {
             return null;
         }
     }
-
-
     // 1.创建表
 
     public void createTable(String tableName, String colFamilies[])
@@ -77,13 +74,17 @@ public class HbaseCliOp {
 
         } else {
 
-            HTableDescriptor dsc = new HTableDescriptor(tableName);
+            HTableDescriptor dsc = new HTableDescriptor(TableName.valueOf(tableName));
+                    //this.admin.getTableDescriptor(TableName.valueOf(tableName));
             int len = colFamilies.length;
 
             for (int i = 0; i < len; i++) {
 
                 HColumnDescriptor family = new HColumnDescriptor(colFamilies[i]);
-
+                //将表放到rs缓存中，保证在读取的时候被命中
+                family.setInMemory(true);
+                //设置数据存储生命周期
+//                family.setTimeToLive()
                 dsc.addFamily(family);
 
             }
@@ -95,13 +96,11 @@ public class HbaseCliOp {
     }
 
     // 2.删除表
-
     public void deleteTable(String tableName) throws IOException {
 
         if (this.admin.tableExists(tableName)) {
-
+            admin.disableTable(tableName);
             admin.deleteTable(tableName);
-
             System.out.println("删除表成功");
 
         } else {
@@ -118,7 +117,7 @@ public class HbaseCliOp {
     public void insertRecord(String tableName, String rowkey, String family,
                              String qualifier, String value) throws IOException {
 
-       HTableInterface  table = this.getTable(tableName);
+        HTableInterface table = this.getTable(tableName);
 
         Put put = new Put(rowkey.getBytes());
 
@@ -136,8 +135,6 @@ public class HbaseCliOp {
                               String qualifier, String value, int sizes) throws IOException {
 
         HTableInterface table = this.getTable(tableName);
-
-
         List<Put> puts = new ArrayList<Put>();
         Put put = null;
         for (int i = 0; i < sizes; i++) {
@@ -169,7 +166,7 @@ public class HbaseCliOp {
     }
 
     // 清空表记录
-    public void truncateTable(String tableName){
+    public void truncateTable(String tableName) {
     }
 
     // 5.获取一行记录:根据rowkey获取
@@ -189,15 +186,15 @@ public class HbaseCliOp {
 
 
     //批量获取
-    public Result[] getBatchs(String tableName,int size,String rowkey[],String cf[],String qualifier[]){
+    public Result[] getBatchs(String tableName, int size, String rowkey[], String cf[], String qualifier[]) {
         HTableInterface table = this.getTable(tableName);
         List<Get> gets = new ArrayList<Get>();
-        Get get =null;
+        Get get = null;
 
         try {
-            for(int i=0;i<size;i++){
-                new Get(Bytes.toBytes(rowkey[i]));
-                get.addColumn(Bytes.toBytes(cf[i]),Bytes.toBytes(qualifier[i]));
+            for (int i = 0; i < size; i++) {
+                get = new Get(Bytes.toBytes(rowkey[i]));
+                get.addColumn(Bytes.toBytes(cf[i]), Bytes.toBytes(qualifier[i]));
             }
             gets.add(get);
             return table.get(gets);
@@ -209,31 +206,29 @@ public class HbaseCliOp {
 
     // 6.获取所有记录
 
-    public List<Result> getAllRecord(String tableName) throws IOException {
+    public List<Result> scanRecord(String tableName) throws IOException {
 
         HTableInterface table = this.getTable(tableName);
 
         Scan scan = new Scan();
-
+        scan.setCacheBlocks(true);
         ResultScanner scanner = table.getScanner(scan);
-
+        scan.setStartRow(Bytes.toBytes("1"));
+        scan.setStopRow(Bytes.toBytes("100000"));
         List<Result> list = new ArrayList<Result>();
-
         for (Result r : scanner) {
 
             list.add(r);
-
         }
 
         scanner.close();
-
         return list;
 
     }
 
-    public void close(){
+    public void close() {
         //关闭资源
-        if(this.connection!=null){
+        if (this.connection != null) {
             try {
                 this.connection.close();
             } catch (IOException e) {

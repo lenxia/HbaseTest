@@ -44,7 +44,7 @@ public class JobTrigger {
 
              */
 
-            TableMapReduceUtil.initTableMapperJob("table", scan, SortMapper.class, SortKeyPair.class, Text.class, job);
+            TableMapReduceUtil.initTableMapperJob("t_status_001", scan, SortMapper.class, SortKeyPair.class, Text.class, job);
 
             job.setReducerClass(SortReduce.class);
 
@@ -90,8 +90,8 @@ class SortMapper extends TableMapper<SortKeyPair, Text> {
         String rowkey = Bytes.toString(value.getRow());
 //        int count = Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("count")));
 //        long avgs = Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("count")));
-        int count = Integer.valueOf(Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("count"))));
-        long avgs = Long.valueOf(Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("count"))));
+        int count = Integer.valueOf(Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("zan_count"))));
+        long avgs = Long.valueOf(Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("comments_count"))));
 
         context.write(new SortKeyPair(count, avgs), new Text(rowkey + "," + count + "," + avgs));
     }
