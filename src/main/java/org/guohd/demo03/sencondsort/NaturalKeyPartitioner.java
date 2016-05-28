@@ -13,20 +13,15 @@ public class NaturalKeyPartitioner extends Partitioner<SortKeyPair, Text> {
 
     @Override
     public int getPartition(SortKeyPair sortKeyPair, Text text, int i) {
-        int count = sortKeyPair.getCount();
+        int count = sortKeyPair.getZan_count();
 
         if (count <= 5) {
-
             return 0;
-
         } else if (count > 5 && count <= 10) {
-
             return 1;
         } else if (count > 10 && count <= 15) {
-
             return 2;
         } else {
-
             return 3;
 
         }

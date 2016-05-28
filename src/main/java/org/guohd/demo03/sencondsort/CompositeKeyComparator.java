@@ -18,7 +18,7 @@ public class CompositeKeyComparator extends WritableComparator {
     public int compare(WritableComparable a, WritableComparable b) {
         SortKeyPair s1 = (SortKeyPair) a;
         SortKeyPair s2 = (SortKeyPair) b;
-        return super.compare(s1, s2);
+        return s1.compareTo(s2);
     }
 }
 

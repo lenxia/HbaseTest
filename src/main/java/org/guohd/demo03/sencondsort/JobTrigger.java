@@ -29,7 +29,9 @@ public class JobTrigger {
     public static void main(String args[]) {
         //定制job
         try {
-            Configuration conf = HBaseConfiguration.create();
+            Configuration conf = new Configuration();
+            conf.set("mapreduce.job.jar","/home/izhonghong/IdeaProjects/HbaseTest/target/HbaseTest-1.0-SNAPSHOT.jar");
+//            conf.set("mapred.remote.os","Linux");
             Job job = Job.getInstance(conf, "二次排序");
             job.setJarByClass(JobTrigger.class);
             Scan scan = new Scan();
@@ -41,18 +43,16 @@ public class JobTrigger {
                 map reduce
                 map:将hbase一张表作为map输入
                 reduce:直接以Text形式输出
-
              */
 
             TableMapReduceUtil.initTableMapperJob("t_status_001", scan, SortMapper.class, SortKeyPair.class, Text.class, job);
 
             job.setReducerClass(SortReduce.class);
 
-
             //自定义分区，分组，排序
+            job. setSortComparatorClass(CompositeKeyComparator.class);
             job.setPartitionerClass(NaturalKeyPartitioner.class);
             job.setGroupingComparatorClass(NaturalKeyGroupComparator.class);
-            job.setSortComparatorClass(CompositeKeyComparator.class);
 
 
             //设置reduce输出格式
@@ -90,22 +90,31 @@ class SortMapper extends TableMapper<SortKeyPair, Text> {
         String rowkey = Bytes.toString(value.getRow());
 //        int count = Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("count")));
 //        long avgs = Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("count")));
-        int count = Integer.valueOf(Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("zan_count"))));
-        long avgs = Long.valueOf(Bytes.toInt(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("comments_count"))));
 
-        context.write(new SortKeyPair(count, avgs), new Text(rowkey + "," + count + "," + avgs));
+        int zan_count = Integer.valueOf(Bytes.toString(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("zan_count"))));
+        int comments_count = Integer.valueOf(Bytes.toString(value.getValue(Bytes.toBytes("info"), Bytes.toBytes("comments_count"))));
+        /*
+        2 20l
+        3 30
+        2 10
+        */
+        context.write(new SortKeyPair(zan_count, comments_count), new Text(zan_count + "," + comments_count));
+
+
     }
 }
 
 //reducer
-class SortReduce extends Reducer<SortMapper, Text, Text, Text> {
+class SortReduce extends Reducer<SortKeyPair, Text, Text, Text> {
 
     @Override
-    protected void reduce(SortMapper key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(SortKeyPair key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
         Iterator<Text> iterator = values.iterator();
+
         while (iterator.hasNext()) {
             context.write(null, iterator.next());
         }
+//        context.write(new Text(key.getComments_count()+""),null);
     }
 }
 

@@ -20,7 +20,7 @@ import java.util.Random;
 public class TestCase {
 
 
-    @Test
+    /*@Test
     public void testDB() {
 
     }
@@ -96,6 +96,6 @@ public class TestCase {
             e.printStackTrace();
         }
     }
-
+*/
 
 }
