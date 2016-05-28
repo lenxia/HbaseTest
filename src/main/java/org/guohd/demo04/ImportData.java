@@ -26,7 +26,7 @@ public class ImportData {
     private static Connection conn = null;
     private static PreparedStatement st = null;
     private static ResultSet rs = null;
-    private static String sql = "select * from t_status_weibo_001 limit 100000";
+    private static String sql = "select * from t_status_004;";
 
     public static ResultSet getResult() {
         try {
@@ -77,11 +77,12 @@ public class ImportData {
                 put.add(cells[j]);
             }
             puts.add(put);
-
-
+            if (puts.size() % 10000 == 0) {
+                table.put(puts);
+                puts.clear();
+            }
         }
         System.out.println("list:" + puts.size());
-        table.put(puts);
         table.close();
         try {
             if (rs != null) rs.close();
@@ -94,11 +95,11 @@ public class ImportData {
     }
 
     public static void main(String args[]) throws Exception {
-//        insert("t_status_weibo_001");
-        Result rs = new HbaseCliOp().getByRowKey("t_status_weibo_001", "10005");
-        byte b[] = rs.getValue(Bytes.toBytes("info"),Bytes.toBytes("text"));
-        String text = new String(b,"UTF-8");
-        System.out.println(text);
+        insert("t_status_004");
+//        Result rs = new HbaseCliOp().getByRowKey("t_status_weibo_001", "10005");
+//        byte b[] = rs.getValue(Bytes.toBytes("info"),Bytes.toBytes("text"));
+//        String text = new String(b,"UTF-8");
+//        System.out.println(text);
 
     }
 

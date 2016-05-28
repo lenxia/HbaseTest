@@ -54,7 +54,6 @@ public class JobTrigger {
             job.setPartitionerClass(NaturalKeyPartitioner.class);
             job.setGroupingComparatorClass(NaturalKeyGroupComparator.class);
 
-
             //设置reduce输出格式
             job.setOutputKeyClass(Text.class);
             job.setOutputValueClass(Text.class);
