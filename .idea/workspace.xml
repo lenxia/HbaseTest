@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="af6a3ef7-4183-4126-9d25-76a8d9c1eb93" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/guohd/demo04/ImportData.java" afterPath="$PROJECT_DIR$/src/main/java/org/guohd/demo04/ImportData.java" />
-    </list>
+    <list default="true" id="af6a3ef7-4183-4126-9d25-76a8d9c1eb93" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -191,12 +189,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1526546532892</updated>
-      <workItem from="1526546534547" duration="1688000" />
+      <workItem from="1526546534547" duration="1732000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="1688000" />
+    <option name="totallyTimeSpent" value="1732000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="4" y="23" width="1276" height="777" extended-state="0" />
